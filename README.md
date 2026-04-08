@@ -21,46 +21,22 @@
 
 ## 支持矩阵
 
-| 平台 | 安装方式 | Skill 自动触发 | 菜单命令 |
-|------|----------|----------------|----------|
-| Codex | `~/.agents/skills` | 支持 | 不保证 |
-| Claude Code | 插件 | 支持 | 支持 |
-| Cursor | 插件 | 支持 | 支持 |
-| Qoder | skill/命令目录 | 支持 | 待验证 |
+| 平台 | 安装方式 | Slash 命令菜单 | 自然语言触发 |
+|------|----------|----------------|--------------|
+| Claude Code | `claude plugin install` | ✅ | ✅ |
+| Cursor | symlink 到 `~/.cursor/skills/` | ✅ | ✅ |
+| Qoder | symlink 到 `~/.agents/skills/` | ✅ | ✅ |
+| Codex | symlink 到 `~/.agents/skills/` | ❌ | ✅ |
 
 ## 安装
 
-### Codex
+### Claude Code
 
-Codex 当前按原生 skill 发现工作，不承诺 `/` 菜单命令。
-
-1. 克隆仓库：
 ```bash
-git clone https://github.com/nedhuohuo/DailyReport.git ~/.codex/daily-report
+claude plugin install https://github.com/nedhuohuo/DailyReport
 ```
 
-2. 链接 skill：
-```bash
-mkdir -p ~/.agents/skills
-ln -s ~/.codex/daily-report/skills/daily-report ~/.agents/skills/daily-report
-```
-
-3. 重启 Codex。
-
-4. 使用方式：
-```text
-生成今天的日报
-初始化 DailyReport
-查看 DailyReport 配置
-```
-
-详细安装说明见 [`.codex/INSTALL.md`](./.codex/INSTALL.md)。
-
-### Claude Code / Cursor
-
-这两个工具走插件布局，命令位于仓库根目录的 `commands/`，skill 位于 `skills/`。
-
-标准命令名：
+安装后即可在 `/` 菜单中使用：
 
 ```text
 /daily-report:dr_init
@@ -70,11 +46,37 @@ ln -s ~/.codex/daily-report/skills/daily-report ~/.agents/skills/daily-report
 /daily-report:dr_status
 ```
 
-仓库中对应的插件清单文件：
+### Cursor
 
-- `.claude-plugin/plugin.json`
-- `.claude-plugin/marketplace.json`
-- `.cursor-plugin/plugin.json`
+```bash
+git clone https://github.com/nedhuohuo/DailyReport.git ~/.cursor/skills/daily-report
+```
+
+重启 Cursor，即可在 `/` 菜单中使用同名命令。
+
+### Qoder
+
+```bash
+git clone https://github.com/nedhuohuo/DailyReport.git ~/.agents/daily-report
+mkdir -p ~/.agents/skills
+ln -s ~/.agents/daily-report/skills/daily-report ~/.agents/skills/daily-report
+```
+
+重启 Qoder，即可在 `/` 菜单中使用同名命令。
+
+### Codex
+
+```bash
+git clone https://github.com/nedhuohuo/DailyReport.git ~/.codex/daily-report
+mkdir -p ~/.agents/skills
+ln -s ~/.codex/daily-report/skills/daily-report ~/.agents/skills/daily-report
+```
+
+重启 Codex，通过自然语言触发（不支持菜单命令）：
+
+```text
+生成今天的日报 / 生成本周周报 / 初始化 DailyReport
+```
 
 ## 使用方法
 
