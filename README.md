@@ -6,10 +6,12 @@
 
 - 📊 **自动生成报告** - 基于 Git 提交历史生成日报、周报、月报
 - 🔍 **多仓库支持** - 扫描工作区，自动发现和管理多个 Git 仓库
+- 🧭 **动态仓库发现兜底** - 当配置中的 `repositories` 为空时，分析脚本会基于 `workspace_root` 自动发现仓库
 - 📝 **Obsidian 兼容** - 输出标准 Markdown，支持 YAML frontmatter 和标签
 - 🤖 **AI 驱动** - 使用 AI 总结代码变更，生成人类可读的报告
 - ⚡ **Token 优化** - 周报/月报优先汇总已有报告，减少 API 调用
 - 🔒 **只读安全** - 所有 Git 操作均为只读，不会修改仓库
+- 🚀 **分析性能优化** - 多仓库分析使用线程池并发执行，降低日报生成等待时间
 
 ## 安装
 
@@ -98,8 +100,9 @@ ln -s ~/.codex/daily-report/skills/daily-report ~/.agents/skills/daily-report
 初始化过程会:
 1. 询问工作区根目录（存放 Git 仓库的位置）
 2. 询问 Obsidian 仓库目录（报告输出位置）
-3. 扫描并发现 Git 仓库
-4. 保存配置到 `~/.config/dailyreport/config.json`
+3. 校验 Obsidian 路径是否存在，不存在时先确认是否创建
+4. 扫描并发现 Git 仓库
+5. 保存配置到 `~/.config/dailyreport/config.json`
 
 ### 生成报告
 
@@ -170,27 +173,31 @@ DailyReport/
 
 ```json
 {
+  "version": 1,
   "workspace_root": "/path/to/your/workspace",
   "output": {
     "vault_dir": "/path/to/obsidian/vault",
-    "base_folder": "DailyReport"
+    "base_folder": "DailyReport",
+    "daily_folder": "daily",
+    "weekly_folder": "weekly",
+    "monthly_folder": "monthly"
   },
-  "repositories": [
-    {
-      "path": "/path/to/repo1",
-      "name": "repo1",
-      "git_user": {
-        "name": "Your Name",
-        "email": "your@email.com"
-      }
-    }
-  ],
   "defaults": {
     "level": "standard",
     "language": "zh-CN"
+  },
+  "repositories": [],
+  "scan_settings": {
+    "max_depth": 5,
+    "skip_dirs": ["node_modules", "vendor", "__pycache__", ".venv", "venv", "dist", "build", ".build", "Pods", ".gradle"],
+    "skip_diff_patterns": ["*.lock", "*-lock.json", "*.min.js", "*.min.css", "*.map", "dist/*", "build/*", ".next/*", "coverage/*", "__snapshots__/*"]
   }
 }
 ```
+
+说明：
+- `repositories` 为空时，`dr_analyze.py` 会回退到基于 `workspace_root` 的动态发现模式
+- 推荐仍然通过 `/daily-report:dr_init` 注册仓库，这样可以保留每个仓库的绑定用户和注册时间
 
 ## 输出示例
 
@@ -199,6 +206,31 @@ DailyReport/
 - 日报: `<vault>/DailyReport/daily/2026-04-08.md`
 - 周报: `<vault>/DailyReport/weekly/2026-W14.md`
 - 月报: `<vault>/DailyReport/monthly/2026-04.md`
+
+日报/周报/月报的 frontmatter 会包含结构化统计字段，便于在 Obsidian Dataview 中查询：
+
+```yaml
+---
+title: "日报 2026-04-08"
+date: 2026-04-08
+type: daily-report
+level: standard
+repos_scanned: 12
+repos_active: 3
+commits_total: 9
+authors: [nedhuo]
+groups: [DailyReport, goodstudy]
+tags:
+  - daily-report
+  - 2026-04
+generated: 2026-04-08T08:00:00
+---
+```
+
+`standard` 和 `detailed` 日报还应将无活动仓库分为三类展示：
+- 近 7 天内活跃：显示仓库名和最后提交日期
+- 90 天以上沉默：单独列出，方便识别废弃仓库
+- 其他无活动仓库：只显示数量
 
 ## 版本历史
 

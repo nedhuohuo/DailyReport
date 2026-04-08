@@ -279,3 +279,73 @@ def eprint(*args, **kwargs):
 def json_output(data):
     """将数据以 JSON 格式输出到 stdout"""
     print(json.dumps(data, ensure_ascii=False, indent=2))
+
+
+def discover_repos(workspace_root, skip_dirs=None):
+    """
+    动态扫描 workspace，发现两层结构内的 Git 仓库。
+
+    支持:
+    - <repo>/.git
+    - <group>/<repo>/.git
+    """
+    if skip_dirs is None:
+        skip_dirs = {
+            "node_modules",
+            "vendor",
+            "__pycache__",
+            ".venv",
+            "venv",
+            "dist",
+            "build",
+            ".build",
+            "Pods",
+            ".gradle",
+        }
+    else:
+        skip_dirs = set(skip_dirs)
+
+    base = Path(workspace_root).expanduser().resolve()
+    repos = []
+
+    for entry in sorted(base.iterdir()):
+        if not entry.is_dir() or entry.name.startswith("."):
+            continue
+
+        if is_git_repo(entry):
+            user = git_config_user(entry)
+            repos.append(
+                {
+                    "path": str(entry),
+                    "name": entry.name,
+                    "group": "",
+                    "git_user": {
+                        "name": user["name"],
+                        "email": user["email"],
+                    },
+                }
+            )
+            continue
+
+        if entry.name in skip_dirs:
+            continue
+
+        for sub in sorted(entry.iterdir()):
+            if not sub.is_dir() or sub.name.startswith("."):
+                continue
+            if not is_git_repo(sub):
+                continue
+            user = git_config_user(sub)
+            repos.append(
+                {
+                    "path": str(sub),
+                    "name": sub.name,
+                    "group": entry.name,
+                    "git_user": {
+                        "name": user["name"],
+                        "email": user["email"],
+                    },
+                }
+            )
+
+    return repos

@@ -47,6 +47,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `commands` array to `.claude-plugin/plugin.json` so Claude Code can discover slash commands from the plugin manifest
 - Replaced non-standard `disable-model-invocation: true` frontmatter with `allowed-tools: Bash, Read, Write, Glob` in all five command files
 
+## [1.1.1] - 2026-04-08
+
+### Changed
+- `dr_analyze.py` now falls back to dynamic repository discovery from `workspace_root` when `repositories` is empty
+- Repository pre-screening now prefers `.git/COMMIT_EDITMSG` mtime and falls back to `.git/logs/HEAD`
+- Multi-repository analysis now runs in parallel with `ThreadPoolExecutor(max_workers=8)`
+- Daily report documentation now requires vault path validation during `/daily-report:dr_init`
+- Report template documentation now standardizes frontmatter fields for Dataview-friendly statistics
+
+### Fixed
+- Deduplicated commits by full SHA when `git log` can surface the same commit multiple times across branch views
+- Synced README, skill docs, command docs, and config docs with the current command behavior and report schema
+
 ## [0.1.0] - 2026-04-07
 
 ### Added

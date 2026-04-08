@@ -55,7 +55,7 @@
 | `output.monthly_folder` | string | Y | 月报子文件夹名 |
 | `defaults.level` | string | N | 默认详细度：`brief` / `standard` / `detailed` |
 | `defaults.language` | string | N | 报告语言，默认 `zh-CN` |
-| `repositories` | array | Y | 已注册仓库列表 |
+| `repositories` | array | Y | 已注册仓库列表；为空时分析脚本会回退到动态发现 |
 | `repositories[].path` | string | Y | 仓库绝对路径 |
 | `repositories[].name` | string | Y | 仓库显示名称（默认取目录名） |
 | `repositories[].git_user.name` | string | Y | 该仓库绑定的 Git 用户名 |
@@ -68,6 +68,8 @@
 ## 用户修改指南
 
 - `repositories[].git_user` 为只读字段，由 `/daily-report:dr_init` 扫描时自动填充
+- 如果 `repositories` 被清空，但 `workspace_root` 仍有效，`dr_analyze.py` 会自动扫描 `<workspace_root>/<repo>` 或 `<workspace_root>/<group>/<repo>` 结构中的 Git 仓库
+- 动态发现模式会为返回结果补充 `group` 和 `git_user`，但不会自动写回 `registered_at`
 - 如需修改某仓库的 Git 用户信息，请先在对应仓库执行 `git config user.name "新名字"` 和 `git config user.email "新邮箱"`，然后重新执行 `/daily-report:dr_init` 扫描
 - `scan_settings` 中的配置可手动编辑，调整扫描和 diff 过滤行为
 - `output` 中的文件夹名可自定义，修改后新报告将输出到新路径

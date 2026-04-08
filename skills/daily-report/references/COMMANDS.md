@@ -26,6 +26,7 @@
    - 工作区根目录路径（必填）
    - Obsidian vault 目录路径（必填）
    - 默认详细度（可选，默认 standard）
+   - 在写入配置前必须校验 vault 路径存在；若不存在，先询问是否创建
 
 3. **扫描仓库**：
    ```bash
@@ -65,6 +66,7 @@
 ### 执行流程
 
 1. **加载配置**：读取 `config.json`，不存在则提示执行 `/daily-report:dr_init`
+   - 若 `repositories` 为空，则回退到基于 `workspace_root` 的动态仓库发现
 2. **调用分析脚本**（日报默认开启 diff）：
    ```bash
    python3 "$SKILL_DIR/scripts/dr_analyze.py" \
@@ -78,6 +80,20 @@
    - `detailed`：逐 commit 分析，关键代码变更引用
 5. **写入文件**：`<vault>/DailyReport/daily/<YYYY-MM-DD>.md`
 6. **展示结果**：输出文件路径和内容摘要
+
+### 结果字段说明
+
+日报 frontmatter 应包含以下结构化字段，便于 Dataview 统计：
+- `repos_scanned`
+- `repos_active`
+- `commits_total`
+- `authors`
+- `groups`（存在分组信息时）
+
+在 `standard` 和 `detailed` 模式下，无活动仓库应分为：
+- 近 7 天活跃：显示仓库名和最后提交日期
+- 90 天以上沉默：单独列出
+- 其余无活动仓库：仅展示数量
 
 ### 输出示例路径
 

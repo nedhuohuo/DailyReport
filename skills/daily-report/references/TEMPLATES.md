@@ -20,6 +20,14 @@ title: "日报 YYYY-MM-DD"
 date: YYYY-MM-DD
 type: daily-report
 level: standard
+repos_scanned: 87
+repos_active: 2
+commits_total: 7
+authors:
+  - nedhuo
+groups:
+  - im
+  - zhy
 tags:
   - daily-report
   - YYYY-MM
@@ -94,6 +102,11 @@ title: "周报 YYYY-Www"
 date: YYYY-MM-DD
 type: weekly-report
 level: brief
+repos_scanned: 87
+repos_active: 6
+commits_total: 24
+authors:
+  - nedhuo
 tags:
   - weekly-report
   - YYYY-MM
@@ -165,6 +178,11 @@ title: "月报 YYYY-MM"
 date: YYYY-MM-01
 type: monthly-report
 level: brief
+repos_scanned: 87
+repos_active: 14
+commits_total: 103
+authors:
+  - nedhuo
 tags:
   - monthly-report
   - YYYY

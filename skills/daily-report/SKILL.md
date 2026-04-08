@@ -53,6 +53,15 @@ This is the entry point. MUST be run before any report generation.
 
 1. Ask user for **workspace root directory** (where their Git repos live)
 2. Ask user for **Obsidian vault directory** (where reports will be saved)
+   Before saving config, verify the path exists. If it does not exist, ask whether to create it:
+   ```python
+   import os
+   if not os.path.isdir(vault_dir):
+       # Prompt user: "该路径不存在，是否创建？(y/n)"
+       # if yes: mkdir -p vault_dir
+       # if no: ask again
+   ```
+   Do NOT proceed until `vault_dir` is confirmed to exist.
 3. Ask user for **default detail level** (optional, defaults to `standard`)
 4. Run repo scan:
    ```bash
@@ -179,7 +188,9 @@ Output paths:
 
 See [TEMPLATES.md](references/TEMPLATES.md) for complete template structures.
 
-Key frontmatter fields: `title`, `date`, `type`, `level`, `tags`, `repos`, `generated`.
+Key frontmatter fields: `title`, `date`, `type`, `level`, `tags`, `repos`, `generated`,
+`repos_scanned`, `repos_active`, `commits_total`, `authors`.
+Reports with grouped activity should also include `groups`.
 Weekly/monthly also include: `source` (data source indicator), `date_range`.
 
 Use `> [!summary]` callout for the overview section (Obsidian native support).
@@ -230,3 +241,7 @@ Each active repo contains: `name`, `path`, `git_user`, `commits[]`, `diff_stats`
 4. **Error handling**: If a script fails (non-zero exit), report the error to user and suggest checking the config. If config is missing, always suggest `/daily-report:dr_init` or the equivalent natural-language request.
 5. **Language**: Generate report content in the language specified by `defaults.language` in config (default: `zh-CN`, Chinese).
 6. **New repo detection**: When analysis detects new repos in workspace, append a note at the end of the report suggesting the user run `/daily-report:dr_init` to register them.
+7. **Inactive repo presentation**: In daily reports under `standard` and `detailed`, split inactive repos into:
+   - recently active in the last 7 days: show repo name + last commit date
+   - silent for 90+ days: list separately to surface possibly abandoned repos
+   - everything else: show count only, do not expand

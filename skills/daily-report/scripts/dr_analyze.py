@@ -14,6 +14,7 @@ dr_analyze.py - DailyReport Git 分析引擎
 """
 
 import argparse
+import concurrent.futures
 import fnmatch
 import os
 import re
@@ -22,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from dr_common import (
+    discover_repos,
     eprint,
     git_cmd,
     is_git_repo,
@@ -64,8 +66,8 @@ def pre_screen_repos(repos, date_from, date_to):
     """
     通过文件系统元数据快速预筛选有活动的仓库。
 
-    检查 .git/logs/HEAD 和 .git/index 的 mtime，
-    如果两者都早于目标日期范围的起始时间，判定为无活动。
+    优先检查 .git/COMMIT_EDITMSG 的 mtime，缺失时回退到 .git/logs/HEAD。
+    如果检测时间早于目标日期范围的起始时间，判定为无活动。
     """
     from_ts = parse_date(date_from).timestamp()
     active = []
@@ -79,15 +81,11 @@ def pre_screen_repos(repos, date_from, date_to):
 
         # 检查 mtime
         git_dir = repo_path / ".git"
-        head_log = git_dir / "logs" / "HEAD"
-        index_file = git_dir / "index"
-
-        latest_mtime = 0
-        for f in [head_log, index_file]:
-            if f.exists():
-                mtime = f.stat().st_mtime
-                if mtime > latest_mtime:
-                    latest_mtime = mtime
+        editmsg = git_dir / "COMMIT_EDITMSG"
+        latest_mtime = editmsg.stat().st_mtime if editmsg.exists() else 0
+        if latest_mtime == 0:
+            head_log = git_dir / "logs" / "HEAD"
+            latest_mtime = head_log.stat().st_mtime if head_log.exists() else 0
 
         if latest_mtime > 0 and latest_mtime < from_ts:
             skipped.append({"name": repo["name"], "reason": "no_recent_activity"})
@@ -139,6 +137,7 @@ def get_commits(repo_path, author_email, date_from, date_to):
         return []
 
     commits = []
+    seen_hashes = set()
     for entry in raw.split(separator):
         entry = entry.strip()
         if not entry:
@@ -146,10 +145,14 @@ def get_commits(repo_path, author_email, date_from, date_to):
         parts = entry.split("|", 3)
         if len(parts) < 4:
             continue
+        sha_full = parts[0]
+        if sha_full in seen_hashes:
+            continue
+        seen_hashes.add(sha_full)
         commits.append(
             {
-                "hash": parts[0][:8],
-                "hash_full": parts[0],
+                "hash": sha_full[:8],
+                "hash_full": sha_full,
                 "author": parts[1],
                 "date": parts[2],
                 "message": parts[3],
@@ -497,8 +500,15 @@ def main():
 
     repositories = config.get("repositories", [])
     if not repositories:
-        eprint("错误: 没有已注册的仓库，请先执行 /daily-report:dr_init")
-        sys.exit(1)
+        workspace_root = config.get("workspace_root", "")
+        if not workspace_root:
+            eprint("错误: 未配置 workspace_root，请先执行 /daily-report:dr_init")
+            sys.exit(1)
+        skip_dirs = config.get("scan_settings", {}).get("skip_dirs")
+        repositories = discover_repos(workspace_root, skip_dirs)
+        if not repositories:
+            eprint(f"错误: 在 {workspace_root} 中未发现任何 Git 仓库")
+            sys.exit(1)
 
     # 过滤指定仓库
     if args.repos:
@@ -534,13 +544,15 @@ def main():
             )
 
     # 分析每个活跃仓库
-    active_results = []
     include_diff = args.diff and not args.stat_only
-    for repo in verified_repos:
-        repo_result = analyze_repo(
+
+    def _analyze(repo):
+        return analyze_repo(
             repo, args.date_from, args.date_to, include_diff, skip_patterns
         )
-        active_results.append(repo_result)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        active_results = list(executor.map(_analyze, verified_repos))
 
     # 检测新仓库
     new_repos = detect_new_repos_in_workspace(config)
