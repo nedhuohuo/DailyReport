@@ -1,10 +1,6 @@
 ---
 name: daily-report
-description: >-
-  Use when the user asks to generate daily reports, weekly reports, or monthly reports
-  from Git activity, or mentions "/dr_init", "/dr_daily", "/dr_weekly", "/dr_monthly",
-  "/dr_status", or wants to set up automated development report generation across
-  multiple repositories.
+description: 'Use when the user asks to generate daily reports, weekly reports, or monthly reports from Git activity, or mentions "/dr_init", "/dr_daily", "/dr_weekly", "/dr_monthly", "/dr_status", or wants to set up automated development report generation across multiple repositories.'
 allowed-tools: Bash, Read, Write, Glob
 ---
 
