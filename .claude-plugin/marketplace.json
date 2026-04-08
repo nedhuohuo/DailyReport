@@ -1,0 +1,18 @@
+{
+  "name": "daily-report-dev",
+  "description": "Development marketplace for the DailyReport plugin",
+  "owner": {
+    "name": "Ned Huohuo"
+  },
+  "plugins": [
+    {
+      "name": "daily-report",
+      "description": "Generate daily, weekly, and monthly development reports from Git activity.",
+      "version": "1.1.0",
+      "source": "./",
+      "author": {
+        "name": "Ned Huohuo"
+      }
+    }
+  ]
+}

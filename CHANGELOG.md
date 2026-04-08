@@ -31,6 +31,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Read-only Git operations (safety-first design)
 - Support for both Codex and Qoder AI tools
 
+## [1.1.0] - 2026-04-08
+
+### Added
+- Plugin manifests for Claude Code (`.claude-plugin/plugin.json`) and Cursor (`.cursor-plugin/plugin.json`)
+- Plugin-level command entrypoints for `dr_init`, `dr_daily`, `dr_weekly`, `dr_monthly`, and `dr_status`
+- Codex installation guide under `.codex/INSTALL.md`
+
+### Changed
+- Moved the DailyReport skill to `skills/daily-report/`
+- Updated slash-command documentation to use namespaced plugin commands such as `/daily-report:dr_daily`
+- Clarified that Codex support is skill-based and slash-command menu support is not guaranteed
+
+### Fixed
+- Added `commands` array to `.claude-plugin/plugin.json` so Claude Code can discover slash commands from the plugin manifest
+- Replaced non-standard `disable-model-invocation: true` frontmatter with `allowed-tools: Bash, Read, Write, Glob` in all five command files
+
 ## [0.1.0] - 2026-04-07
 
 ### Added

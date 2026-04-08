@@ -1,6 +1,6 @@
 # DailyReport
 
-一个低成本的开发者日报/周报/月报生成工具。通过分析多个 Git 仓库的活动，生成兼容 Obsidian 的 Markdown 报告。
+一个低成本的开发者日报/周报/月报生成工具。它既可以作为 `skill` 被 Codex 等工具发现，也可以在支持插件命令的 AI 工具中显示为菜单命令。
 
 ## 功能特性
 
@@ -17,28 +17,64 @@
 
 - Python 3.11+
 - Git
-- AI 工具: Codex 或 Qoder
+- AI 工具: Codex、Claude Code、Cursor、Qoder 中的任意一种
 
-### 安装步骤
+## 支持矩阵
 
-1. 克隆仓库到本地:
+| 平台 | 安装方式 | Skill 自动触发 | 菜单命令 |
+|------|----------|----------------|----------|
+| Codex | `~/.agents/skills` | 支持 | 不保证 |
+| Claude Code | 插件 | 支持 | 支持 |
+| Cursor | 插件 | 支持 | 支持 |
+| Qoder | skill/命令目录 | 支持 | 待验证 |
+
+## 安装
+
+### Codex
+
+Codex 当前按原生 skill 发现工作，不承诺 `/` 菜单命令。
+
+1. 克隆仓库：
 ```bash
-git clone https://github.com/nedhuohuo/DailyReport.git
+git clone https://github.com/nedhuohuo/DailyReport.git ~/.codex/daily-report
 ```
 
-2. 链接到 AI 工具 skill 目录:
-
-**对于 Qoder:**
+2. 链接 skill：
 ```bash
-ln -s $(pwd)/DailyReport/daily-report ~/.qoder/skills/daily-report
+mkdir -p ~/.agents/skills
+ln -s ~/.codex/daily-report/skills/daily-report ~/.agents/skills/daily-report
 ```
 
-**对于 Codex:**
-```bash
-ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
+3. 重启 Codex。
+
+4. 使用方式：
+```text
+生成今天的日报
+初始化 DailyReport
+查看 DailyReport 配置
 ```
 
-3. 重启 AI 工具以加载 skill
+详细安装说明见 [`.codex/INSTALL.md`](./.codex/INSTALL.md)。
+
+### Claude Code / Cursor
+
+这两个工具走插件布局，命令位于仓库根目录的 `commands/`，skill 位于 `skills/`。
+
+标准命令名：
+
+```text
+/daily-report:dr_init
+/daily-report:dr_daily
+/daily-report:dr_weekly
+/daily-report:dr_monthly
+/daily-report:dr_status
+```
+
+仓库中对应的插件清单文件：
+
+- `.claude-plugin/plugin.json`
+- `.claude-plugin/marketplace.json`
+- `.cursor-plugin/plugin.json`
 
 ## 使用方法
 
@@ -46,8 +82,8 @@ ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
 
 首次使用前需要初始化配置:
 
-```
-/dr_init
+```text
+/daily-report:dr_init
 ```
 
 或说:
@@ -62,8 +98,8 @@ ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
 ### 生成报告
 
 #### 日报
-```
-/dr_daily
+```text
+/daily-report:dr_daily
 ```
 或说: "生成今天的日报"
 
@@ -72,8 +108,8 @@ ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
 - `--date=YYYY-MM-DD` - 指定日期（默认: 今天）
 
 #### 周报
-```
-/dr_weekly
+```text
+/daily-report:dr_weekly
 ```
 或说: "生成本周报"
 
@@ -82,8 +118,8 @@ ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
 - `--diff` - 包含 diff 分析
 
 #### 月报
-```
-/dr_monthly
+```text
+/daily-report:dr_monthly
 ```
 或说: "生成本月报"
 
@@ -92,8 +128,8 @@ ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
 - `--diff` - 包含 diff 统计
 
 #### 查看状态
-```
-/dr_status
+```text
+/daily-report:dr_status
 ```
 或说: "查看 daily report 配置"
 
@@ -108,22 +144,18 @@ ln -s $(pwd)/DailyReport/daily-report ~/.codex/skills/daily-report
 ## 项目结构
 
 ```
-daily-report/
-├── SKILL.md              # Skill 定义文件
-├── commands/             # 斜杠命令定义
-│   ├── dr_init.md
-│   ├── dr_daily.md
-│   ├── dr_weekly.md
-│   ├── dr_monthly.md
-│   └── dr_status.md
-├── references/           # 参考文档
-│   ├── COMMANDS.md
-│   ├── CONFIG.md
-│   └── TEMPLATES.md
-└── scripts/              # Python 脚本
-    ├── dr_scan.py        # 仓库扫描
-    ├── dr_analyze.py     # Git 分析
-    └── dr_common.py      # 公共模块
+DailyReport/
+├── .claude-plugin/       # Claude Code 插件清单
+├── .cursor-plugin/       # Cursor 插件清单
+├── .codex/               # Codex 安装说明
+├── commands/             # 插件级菜单命令入口
+├── skills/
+│   └── daily-report/
+│       ├── SKILL.md
+│       ├── commands/     # 兼容旧布局的命令说明
+│       ├── references/
+│       └── scripts/
+└── README.md
 ```
 
 ## 配置说明

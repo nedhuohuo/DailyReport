@@ -1,0 +1,25 @@
+{
+  "name": "daily-report",
+  "description": "Generate daily, weekly, and monthly development reports from Git activity and write them in Obsidian-compatible Markdown.",
+  "version": "1.1.0",
+  "author": {
+    "name": "Ned Huohuo"
+  },
+  "homepage": "https://github.com/nedhuohuo/DailyReport",
+  "repository": "https://github.com/nedhuohuo/DailyReport",
+  "license": "MIT",
+  "keywords": [
+    "reporting",
+    "git",
+    "obsidian",
+    "productivity",
+    "developer-tools"
+  ],
+  "commands": [
+    "./commands/dr_init.md",
+    "./commands/dr_daily.md",
+    "./commands/dr_weekly.md",
+    "./commands/dr_monthly.md",
+    "./commands/dr_status.md"
+  ]
+}
