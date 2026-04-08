@@ -33,7 +33,11 @@
 ### Claude Code
 
 ```bash
-claude plugin install https://github.com/nedhuohuo/DailyReport
+# 1. 添加 marketplace
+claude plugin marketplace add nedhuohuo/DailyReport
+
+# 2. 安装插件
+claude plugin install daily-report
 ```
 
 安装后即可在 `/` 菜单中使用：

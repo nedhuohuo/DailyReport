@@ -1,18 +1,20 @@
 {
-  "name": "daily-report-dev",
-  "description": "Development marketplace for the DailyReport plugin",
+  "name": "daily-report",
   "owner": {
-    "name": "Ned Huohuo"
+    "name": "Ned Huohuo",
+    "url": "https://github.com/nedhuohuo"
+  },
+  "metadata": {
+    "description": "Generate daily, weekly, and monthly development reports from Git activity.",
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "daily-report",
-      "description": "Generate daily, weekly, and monthly development reports from Git activity.",
-      "version": "1.1.0",
       "source": "./",
-      "author": {
-        "name": "Ned Huohuo"
-      }
+      "description": "Generate daily, weekly, and monthly development reports from Git activity and write them in Obsidian-compatible Markdown.",
+      "category": "productivity",
+      "tags": ["reporting", "git", "obsidian", "productivity", "developer-tools"]
     }
   ]
 }
