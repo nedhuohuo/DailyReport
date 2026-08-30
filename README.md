@@ -163,7 +163,8 @@ DailyReport/
 │       ├── SKILL.md
 │       ├── commands/     # 兼容旧布局的命令说明
 │       ├── references/
-│       └── scripts/
+│       ├── scripts/
+│       └── templates/    # 日报/周报/月报 Markdown 模板，以及锁定的周报 HTML 样式
 └── README.md
 ```
 
@@ -196,6 +197,9 @@ DailyReport/
 ```
 
 说明：
+- 报告输出以 `skills/daily-report/templates/daily.md`、`weekly.md`、`monthly.md` 为模板
+- 周报 HTML 必须以 `skills/daily-report/templates/weekly.html` 为唯一样式源，原样复制 `<style>`，只替换正文
+- `dr_render.py` 会根据 `dr_analyze.py` 输出的 JSON 填充 frontmatter、统计、仓库详情和总结骨架
 - `repositories` 为空时，`dr_analyze.py` 会回退到基于 `workspace_root` 的动态发现模式
 - 推荐仍然通过 `/daily-report:dr_init` 注册仓库，这样可以保留每个仓库的绑定用户和注册时间
 
@@ -204,7 +208,7 @@ DailyReport/
 报告将保存到 Obsidian 仓库的以下位置:
 
 - 日报: `<vault>/DailyReport/daily/2026-04-08.md`
-- 周报: `<vault>/DailyReport/weekly/2026-W14.md`
+- 周报: `<vault>/DailyReport/weekly/2026-W14.md`（HTML 同目录 `2026-W14.html`，样式固定为 `templates/weekly.html`）
 - 月报: `<vault>/DailyReport/monthly/2026-04.md`
 
 日报/周报/月报的 frontmatter 会包含结构化统计字段，便于在 Obsidian Dataview 中查询：

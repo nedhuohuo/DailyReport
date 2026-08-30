@@ -74,10 +74,7 @@
      --from <date> --to <date+1> --diff
    ```
 3. **接收 JSON 分析数据**
-4. **按详细度级别生成报告**：
-   - `brief`：每仓库 2-3 行概要
-   - `standard`：每仓库一段，关键变更说明
-   - `detailed`：逐 commit 分析，关键代码变更引用
+4. **按模板渲染报告**：调用 `dr_render.py --type daily`，使用 `templates/daily.md` 填充 frontmatter、概览、仓库详情、提交记录、关键变更和新发现仓库。
 5. **写入文件**：`<vault>/DailyReport/daily/<YYYY-MM-DD>.md`
 6. **展示结果**：输出文件路径和内容摘要
 
@@ -123,7 +120,31 @@
    - **有日报 + 无 `--diff`**（默认路径）：读取日报内容汇总生成，**不调用 Python 脚本**，token 消耗最低
    - **有日报 + `--diff`**：读取日报 + 调用 `dr_analyze.py --diff` 获取一周 diff 数据补全
    - **无日报**：调用 `dr_analyze.py` 获取全量数据
-5. **写入文件**：`<vault>/DailyReport/weekly/<YYYY>-W<WW>.md`
+5. **按模板渲染并写入文件**：调用 `dr_render.py --type weekly`，使用 `templates/weekly.md` 写入 `<vault>/DailyReport/weekly/<YYYY>-W<WW>.md`
+6. **如需 HTML**：从 `templates/weekly.html` 复制锁定样式，只替换正文占位符，写入同目录 `<YYYY>-W<WW>.html`。禁止改写 `<style>`。
+
+### 周报内容质量要求
+
+- 周报正文固定三节：`一、本周总结`、`二、本周任务完成情况`、`三、下周工作计划`。
+- 标题格式：`{汇报人}汇报周期: YYYY年M月D日 — YYYY年M月D日`（明确本周起止日期）。
+- 任务完成情况使用表格罗列事项与状态：蓝色=进行中，绿色=已完成，红色=异常/风险；未完成须备注阻碍原因与预计完成时间。
+- 周报正文以任务/功能为核心，不以仓库为核心。
+- 新发现仓库必须纳入本周期提交分析；`new_repos_detected` 只作为元信息保留。
+- 正文不得输出 commit hash、文件变更数、代码增删行、仓库活跃/沉默统计。
+- 无法确认需求名称时，任务标题留空，只在状态表中排列具体事项。
+- 多个相关 commit 必须聚合成少量功能主题，避免逐 commit 罗列。
+- 面向用户的页面/模块不能被泛化合并掉；例如面试管理页面相关工作应独立归为 `面试管理页面建设与优化`。
+- 宿主产品名称使用固定映射：`zhb-AppShell` 为“挚护办”，`zhy-AppShell` 与 `zhy-ModuleMain` 为“挚护易”；禁止将 `zhy` 解释为“挚护医”。
+
+### 周报生成复利流程
+
+周报必须先从代码差异中提取足够多的事实，再合并成少量业务周报事项：
+
+1. 从 diff 路径和代码语义提取页面、接口、ViewModel、Repository、Model、Layout、Dialog、Adapter、资源等事实。
+2. 先保留详细任务点，不急于压缩。
+3. 再按业务需求/页面/能力合并同类项，输出为 `任务一/二/三`。
+4. 低价值工程杂项进入 `任务N：其他/支撑性调整`。
+5. 大业务块必须展开关键子任务（编号子节或表格行），并为每项填写状态。
 
 ### 数据来源标注
 
@@ -155,7 +176,7 @@
    - **无周报有日报**：基于日报汇总
    - **无任何报告**：调用 `dr_analyze.py` 获取全月数据
    - **`--diff` 启用时**：月报仅获取 `--stat-only` 统计，不获取完整 diff 内容
-5. **写入文件**：`<vault>/DailyReport/monthly/<YYYY>-<MM>.md`
+5. **按模板渲染并写入文件**：调用 `dr_render.py --type monthly`，使用 `templates/monthly.md` 写入 `<vault>/DailyReport/monthly/<YYYY>-<MM>.md`
 
 ### 注意事项
 
@@ -197,8 +218,10 @@ SKILL_DIR="$(dirname "$(readlink -f ~/.agents/skills/daily-report/SKILL.md)" 2>/
 |------|------|------|------|
 | `dr_scan.py` | `--workspace` | JSON (stdout) | 仓库扫描 |
 | `dr_analyze.py` | `--config --from --to [--diff]` | JSON (stdout) | Git 分析 |
+| `dr_render.py` | `--type --input [--output]` | Markdown | 模板渲染 |
 
 - 所有脚本通过命令行参数接收输入
-- 正常输出为 JSON 格式到 stdout
+- `dr_scan.py` 和 `dr_analyze.py` 正常输出为 JSON 格式到 stdout
+- `dr_render.py` 正常输出为 Markdown；指定 `--output` 时直接写入报告文件
 - 错误信息输出到 stderr
 - 非零退出码表示执行失败

@@ -108,9 +108,9 @@ When config already exists:
 
 4. **Data collection** (varies by report type — see below)
 
-5. **AI report generation**: Using the collected data and report templates from [TEMPLATES.md](references/TEMPLATES.md), generate the Markdown report content.
+5. **Template rendering**: Render the Markdown report with `scripts/dr_render.py` and the standalone templates in `templates/`. The renderer fills deterministic frontmatter, statistics, repository sections, tables, and footer text. AI may still provide an optional summary via `--summary`.
 
-6. **Write output file** using Write tool to the appropriate path.
+6. **Write output file** to the appropriate path. Prefer `dr_render.py --output <path>` so the final Markdown follows the selected template.
 
 ### /daily-report:dr_daily data collection
 
@@ -124,7 +124,17 @@ python3 "$SKILL_DIR/scripts/dr_analyze.py" \
 
 Parse the JSON output. Key fields per active repo: `commits`, `diff_stats`, `diff_content`, `branch_activity`.
 
-If `new_repos_detected` is non-empty, mention it at the end of the report.
+Render the daily Markdown with:
+```bash
+python3 "$SKILL_DIR/scripts/dr_render.py" \
+  --type daily \
+  --input <analysis.json> \
+  --output "<vault>/DailyReport/daily/<YYYY-MM-DD>.md" \
+  --date <YYYY-MM-DD> \
+  --level <brief|standard|detailed>
+```
+
+If `new_repos_detected` is non-empty, the renderer adds a `新发现仓库` section.
 
 ### /daily-report:dr_weekly data collection
 
@@ -142,6 +152,24 @@ If `new_repos_detected` is non-empty, mention it at the end of the report.
   Use diff data to supplement/verify daily summaries.
 - **No dailies**: Run full analysis (with or without `--diff` based on flag).
 
+After collecting either summarized JSON-compatible data or direct analysis JSON, render weekly Markdown with:
+```bash
+python3 "$SKILL_DIR/scripts/dr_render.py" \
+  --type weekly \
+  --input <analysis.json> \
+  --output "<vault>/DailyReport/weekly/<YYYY>-W<WW>.md" \
+  --date <week-monday> \
+  --week <YYYY-Www> \
+  --level <brief|standard|detailed> \
+  --source <daily-summary|daily-summary+diff|diff-analysis> \
+  --reporter "<defaults.reporter_name or author>"
+```
+
+Weekly Markdown must follow `templates/weekly.md`:
+`{汇报人}汇报周期` → `一、本周总结` → `二、本周任务完成情况`（表格罗列事项与状态）→ `三、下周工作计划`。
+
+When also writing HTML, copy `templates/weekly.html` and replace placeholders only. The `<style>` block is locked (`WEEKLY_HTML_STYLE_LOCKED`). Do not invent a new layout, header card, dark theme, or status chips.
+
 ### /daily-report:dr_monthly data collection
 
 **Token-efficient strategy**: Monthly reports summarize weekly reports, which summarize dailies.
@@ -157,6 +185,76 @@ If `new_repos_detected` is non-empty, mention it at the end of the report.
     --config ~/.config/dailyreport/config.json \
     --from <month-1st> --to <next-month-1st> --diff --stat-only
   ```
+
+After collecting either summarized JSON-compatible data or direct analysis JSON, render monthly Markdown with:
+```bash
+python3 "$SKILL_DIR/scripts/dr_render.py" \
+  --type monthly \
+  --input <analysis.json> \
+  --output "<vault>/DailyReport/monthly/<YYYY-MM>.md" \
+  --date <month-first-day> \
+  --month <YYYY-MM> \
+  --level <brief|standard|detailed> \
+  --source <weekly-summary|daily-summary|diff-analysis>
+```
+
+## Weekly Report Quality Rules
+
+Weekly reports are human-facing progress reports, not Git activity dumps. Follow these rules strictly:
+
+### 周报基础规范
+
+1. **汇报周期**：标题必须明确本周起止日期。格式：`{汇报人}汇报周期: YYYY年M月D日 — YYYY年M月D日`（示例：`张三汇报周期: 2026年7月27日 — 2026年7月31日`）。
+2. **三大固定板块**：正文固定包含且仅按此顺序：`一、本周总结` → `二、本周任务完成情况` → `三、下周工作计划`。
+3. **任务进展用表格**：在「本周任务完成情况」中尽量用表格清晰罗列「事项 / 完成状态」（默认两列）；单个任务功能条目不超过 4 条（可合并相近子项）；未完成项须额外备注阻碍原因与预计完成时间（写入状态文案，或仅在有未完成项时才加「备注」列）。
+4. **状态色标**（Obsidian/Markdown 可用 `<font color="...">`）：
+   - **蓝色** = 进行中：`<font color="blue">进行中</font>`
+   - **已完成**：`✅ 已完成`（带 ✅，文字不用绿色）
+   - **红色** = 异常或存在风险：`<font color="red">存在风险</font>`
+
+### 内容与质量约束
+
+5. **Task/function first**: The weekly report body must describe completed tasks, features, fixes, verification, and follow-up plans.
+6. **Organize as `任务一/二/三：主题`**: Use Markdown status tables under each theme. Large tasks may use numbered subsections (`1. 2. 3.`) each with its own table.
+7. **Do not use repository activity as prose**: Do not write sections whose main point is that a repository changed or did not change.
+8. **No Git metadata in body prose**: Do not include commit hashes, file counts, insertion/deletion counts, or "repository active/inactive" language in weekly report body sections. Git metadata may stay in JSON/frontmatter/debug output only.
+9. **Analyze new repositories**: Newly detected repositories must participate in the target-period analysis before rendering. Keep them in `new_repos_detected` as metadata, but do not omit their commits from the weekly summary.
+10. **Do not invent requirement names**: The `任务N` title is a requirement/theme name only. If it cannot be confidently inferred, leave the title empty and list concrete items in the status table. Do not promote low-level chore names to requirement titles.
+11. **Aggregate related commits**: Multiple commits for the same feature/fix must be grouped into a small number of work themes. Do not list commit-by-commit unless `--level=detailed` explicitly asks for it.
+12. **Write like a weekly report**: Summary and task rows should explain what capability or task moved forward, not how many files changed.
+13. **Preserve product surfaces**: If commits or diff paths indicate a user-facing page/screen/management surface, keep it as an independent task instead of merging it into generic buckets like UI optimization or business flow. Example: interview management page work (`InterviewManageActivity`, `iminterview_activity_interview_manage.xml`, `面试列表`, `快速面试入口`, `订单/客资`, `简历操作栏`) should group as `面试管理页面建设与优化`.
+14. **Diff-first task inference**: Commit messages are hints only. Weekly task grouping must inspect changed file paths and code/layout/model/API names when `diff_content` is available. Product-surface paths override generic commit scopes such as `ui`, `layout`, or `interview`.
+15. **Use canonical host App names**: Render `zhb-AppShell` as `挚护办`; render `zhy-AppShell` and `zhy-ModuleMain` as `挚护易`. Never refer to a `zhy` host as `挚护医`.
+16. **Reporter name**: Prefer `--reporter` / `defaults.reporter_name`; otherwise fall back to the first author name.
+
+Bad weekly body examples:
+- `涉及仓库：ModuleImInterview；提交 45 次；代码变更 +1200/-300 行。`
+- `本次任务对应提交 abc1234，涉及 1 个文件变更。`
+- `本周期另有 87 个仓库暂无匹配提交记录。`
+
+Good weekly body example:
+- `本周重点围绕支付对接自测、推包回归和合同管理缺陷修复推进。`
+- `**任务一：合伙人需求·支付对接·自测·提测**` followed by a status table with green/blue/red colored status cells and remarks for unfinished items.
+
+### Weekly Report Diff-to-Requirement Workflow
+
+For weekly reports, use a two-phase compounding workflow:
+
+1. **Write many facts from diff first**
+   - Inspect changed file paths, layouts, Activities/Fragments, ViewModels, repositories, APIs, request/response models, adapters, popups/dialogs, resources, and custom views.
+   - Extract concrete facts generously: pages touched, capabilities added, flows changed, UI components created, interfaces/models added, verification/fix areas.
+   - Treat commit messages as hints only. Diff paths and code semantics override generic commit scopes like `ui`, `layout`, or `interview`.
+
+2. **Then merge into fewer weekly items**
+   - Merge facts into product/business requirements, pages, or capabilities.
+   - Preserve independent product surfaces as independent items, such as `面试管理页面建设与优化`.
+   - Demote low-value technical chores (`格式化`, `资源引用`, `图片资源`, vague `代码提交`) into `其他/支撑性调整`.
+   - Large business blocks must include concrete sub-tasks; do not summarize a large capability in one vague sentence.
+
+Pipeline:
+```text
+Git diff -> fact extraction -> detailed task list -> requirement/theme merge -> concise weekly report
+```
 
 ## Three Detail Levels
 
@@ -179,7 +277,13 @@ If `new_repos_detected` is non-empty, mention it at the end of the report.
 
 ## Report Templates
 
-Reports use Obsidian-compatible Markdown with YAML frontmatter and tags.
+Reports use Obsidian-compatible Markdown with YAML frontmatter and tags. The standalone files in `templates/` are the output source of truth:
+- `templates/daily.md`
+- `templates/weekly.md`
+- `templates/weekly.html` (locked HTML style; copy `<style>` verbatim)
+- `templates/monthly.md`
+
+`references/TEMPLATES.md` documents the rendered structure and frontmatter semantics.
 
 Output paths:
 - Daily: `<vault>/<base_folder>/daily/<YYYY-MM-DD>.md`
@@ -209,6 +313,26 @@ python3 "$SKILL_DIR/scripts/dr_scan.py" --workspace /path/to/root \
 ```
 
 Output: JSON array of `{path, name, git_user: {name, email}, git_user_source}`.
+
+### dr_render.py
+
+```bash
+# Render daily Markdown from analysis JSON
+python3 "$SKILL_DIR/scripts/dr_render.py" \
+  --type daily \
+  --input /tmp/daily-analysis.json \
+  --output /path/to/vault/DailyReport/daily/2026-04-07.md \
+  --date 2026-04-07 --level standard
+
+# Render weekly Markdown with source metadata
+python3 "$SKILL_DIR/scripts/dr_render.py" \
+  --type weekly \
+  --input /tmp/weekly-analysis.json \
+  --output /path/to/vault/DailyReport/weekly/2026-W15.md \
+  --date 2026-04-06 --week 2026-W15 --source daily-summary
+```
+
+Output: Obsidian-compatible Markdown written to `--output`, or stdout when `--output` is omitted.
 
 ### dr_analyze.py
 

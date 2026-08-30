@@ -21,7 +21,8 @@
   },
   "defaults": {
     "level": "standard",
-    "language": "zh-CN"
+    "language": "zh-CN",
+    "reporter_name": "张三"
   },
   "repositories": [
     {
@@ -55,6 +56,7 @@
 | `output.monthly_folder` | string | Y | 月报子文件夹名 |
 | `defaults.level` | string | N | 默认详细度：`brief` / `standard` / `detailed` |
 | `defaults.language` | string | N | 报告语言，默认 `zh-CN` |
+| `defaults.reporter_name` | string | N | 周报标题中的汇报人姓名；也可用 `dr_render.py --reporter` 覆盖 |
 | `repositories` | array | Y | 已注册仓库列表；为空时分析脚本会回退到动态发现 |
 | `repositories[].path` | string | Y | 仓库绝对路径 |
 | `repositories[].name` | string | Y | 仓库显示名称（默认取目录名） |

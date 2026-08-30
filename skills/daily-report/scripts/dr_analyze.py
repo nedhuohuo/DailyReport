@@ -26,6 +26,7 @@ from dr_common import (
     discover_repos,
     eprint,
     git_cmd,
+    git_config_user,
     is_git_repo,
     json_output,
     load_config,
@@ -102,6 +103,7 @@ def verify_repo_activity(repo_path, author_email, date_from, date_to):
         repo_path,
         [
             "log",
+            "--all",
             "--oneline",
             f"--after={date_from}",
             f"--before={date_to}",
@@ -125,6 +127,7 @@ def get_commits(repo_path, author_email, date_from, date_to):
         repo_path,
         [
             "log",
+            "--all",
             f"--after={date_from}",
             f"--before={date_to}",
             f"--author={author_email}",
@@ -170,6 +173,7 @@ def get_diff_stats(repo_path, author_email, date_from, date_to):
         repo_path,
         [
             "log",
+            "--all",
             f"--after={date_from}",
             f"--before={date_to}",
             f"--author={author_email}",
@@ -207,6 +211,7 @@ def get_diff_stats(repo_path, author_email, date_from, date_to):
         repo_path,
         [
             "log",
+            "--all",
             f"--after={date_from}",
             f"--before={date_to}",
             f"--author={author_email}",
@@ -255,6 +260,7 @@ def get_diff_content(repo_path, author_email, date_from, date_to, skip_patterns)
         repo_path,
         [
             "log",
+            "--all",
             f"--after={date_from}",
             f"--before={date_to}",
             f"--author={author_email}",
@@ -395,19 +401,15 @@ def get_branch_activity(repo_path, author_email, date_from, date_to):
     return result
 
 
-def detect_new_repos_in_workspace(config):
-    """检测工作区中的新增仓库"""
-    workspace_root = config.get("workspace_root", "")
-    if not workspace_root or not Path(workspace_root).is_dir():
-        return []
 
-    registered_paths = {r["path"] for r in config.get("repositories", [])}
-    skip_dirs = set(config.get("scan_settings", {}).get("skip_dirs", []))
-    max_depth = config.get("scan_settings", {}).get("max_depth", 5)
+def config_workspace_root(config):
+    return config.get("workspace_root") or config.get("workspace") or ""
 
-    # 轻量级扫描：仅检测新目录
-    workspace = Path(workspace_root).resolve()
-    new_repos = []
+
+def scan_workspace_repos(workspace_root, skip_dirs=None, max_depth=5):
+    workspace = Path(workspace_root).expanduser().resolve()
+    repos = []
+    skip_dirs = set(skip_dirs or [])
 
     for dirpath, dirnames, _ in os.walk(workspace, topdown=True):
         current = Path(dirpath)
@@ -418,8 +420,14 @@ def detect_new_repos_in_workspace(config):
             continue
 
         if is_git_repo(current):
-            if str(current) not in registered_paths:
-                new_repos.append(str(current))
+            group = ""
+            try:
+                relative = current.relative_to(workspace)
+                if len(relative.parts) > 1:
+                    group = relative.parts[0]
+            except ValueError:
+                group = ""
+            repos.append({"name": current.name, "path": str(current), "group": group})
             dirnames.clear()
             continue
 
@@ -427,8 +435,47 @@ def detect_new_repos_in_workspace(config):
             d for d in dirnames if not d.startswith(".") and d not in skip_dirs
         ]
 
-    return new_repos
+    return repos
 
+def detect_new_repos_in_workspace(config):
+    """检测工作区中的新增仓库，兼容 workspace_root 和旧版 workspace 配置字段。"""
+    workspace_root = config_workspace_root(config)
+    if not workspace_root or not Path(workspace_root).is_dir():
+        return []
+
+    registered_paths = {r["path"] for r in config.get("repositories", [])}
+    skip_dirs = set(config.get("scan_settings", {}).get("skip_dirs", []))
+    max_depth = config.get("scan_settings", {}).get("max_depth", 5)
+
+    repos = scan_workspace_repos(workspace_root, skip_dirs, max_depth)
+    return [repo for repo in repos if repo["path"] not in registered_paths]
+
+
+def normalize_repository(repo_info):
+    """Normalize repository config entries from both current and legacy configs."""
+    repo = dict(repo_info)
+    git_user = repo.get("git_user") or {}
+    if not git_user.get("email"):
+        user = git_config_user(repo["path"])
+        git_user = {"name": user.get("name", ""), "email": user.get("email", "")}
+        repo["git_user_source"] = user.get("source", "")
+    repo["git_user"] = git_user
+    return repo
+
+
+def normalize_repositories(repositories):
+    return [normalize_repository(repo) for repo in repositories]
+
+
+def analysis_repositories(config, repositories):
+    new_repos = detect_new_repos_in_workspace(config)
+    existing_paths = {repo["path"] for repo in repositories}
+    combined = list(repositories)
+    for repo in new_repos:
+        if repo["path"] not in existing_paths:
+            combined.append(repo)
+            existing_paths.add(repo["path"])
+    return normalize_repositories(combined), new_repos
 
 def analyze_repo(repo_info, date_from, date_to, include_diff, skip_patterns):
     """分析单个仓库的 Git 活动"""
@@ -500,7 +547,7 @@ def main():
 
     repositories = config.get("repositories", [])
     if not repositories:
-        workspace_root = config.get("workspace_root", "")
+        workspace_root = config_workspace_root(config)
         if not workspace_root:
             eprint("错误: 未配置 workspace_root，请先执行 /daily-report:dr_init")
             sys.exit(1)
@@ -509,6 +556,8 @@ def main():
         if not repositories:
             eprint(f"错误: 在 {workspace_root} 中未发现任何 Git 仓库")
             sys.exit(1)
+
+    repositories, new_repos = analysis_repositories(config, repositories)
 
     # 过滤指定仓库
     if args.repos:
@@ -553,9 +602,6 @@ def main():
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         active_results = list(executor.map(_analyze, verified_repos))
-
-    # 检测新仓库
-    new_repos = detect_new_repos_in_workspace(config)
 
     # 输出结果
     output = {

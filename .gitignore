@@ -36,3 +36,6 @@ wheels/
 # OS
 .DS_Store
 Thumbs.db
+
+# Personal weekly report outputs; style source is skills/daily-report/templates/weekly.html
+/weekly/

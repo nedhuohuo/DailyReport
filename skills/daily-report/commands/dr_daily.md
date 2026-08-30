@@ -10,7 +10,7 @@ This command will:
 1. Load config from ~/.config/dailyreport/config.json
 2. Determine date range (default: today)
 3. Collect Git activity data with diff analysis
-4. Generate Obsidian-compatible Markdown report
+4. Render Obsidian-compatible Markdown with `templates/daily.md` via `dr_render.py`
 5. Save to <vault>/DailyReport/daily/<YYYY-MM-DD>.md
 
 Optional parameters:
