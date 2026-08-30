@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>nedhuo汇报周期: 2026年8月10日 — 2026年8月16日</title>
+<style>
+:root{--text:#1f2328;--muted:#57606a;--border:#d0d7de;--bg:#fff;--head-bg:#f6f8fa}
+*{box-sizing:border-box}body{margin:0;padding:32px 20px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--text);background:#f3f4f6;line-height:1.7}
+.page{max-width:860px;margin:0 auto;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:40px 44px}
+h1{margin:0 0 28px;font-size:1.55rem;border-bottom:1px solid var(--border);padding-bottom:16px}h2{margin:32px 0 14px;font-size:1.2rem}
+p{margin:0 0 12px}.task-title{margin:22px 0 10px;font-weight:600}
+.sub-title{margin:16px 0 8px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:0 0 8px;font-size:.95rem}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:var(--head-bg);font-weight:600}
+td.status{white-space:nowrap;width:8.5em}ol{margin:0;padding-left:1.4em}li{margin:6px 0}
+.footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+@media print{body{background:#fff;padding:0}.page{border:none;border-radius:0;padding:0}}
+</style></head><body><article class="page">
+<h1>nedhuo汇报周期: 2026年8月10日 — 2026年8月16日</h1>
+<h2>一、本周总结</h2>
+<p>本周共计进行两块工作：原生通用问答会话搭建、H5 混合聊天 TTS 播报调整。</p>
+<p>在上周通用问答模块基础上，补齐原生聊天页、历史会话侧边栏、点赞点踩和本地播报，并打通按会话发送、流式回答和历史分页。H5 混合聊天侧完善本地 TTS 长文播报，按业务 ID 回传播放状态，相关改动已同步到挚护办。</p>
+<p>下周重点做通用问答宿主接入与场景回归，以及 H5 混合聊天提测。</p>
+<h2>二、本周任务完成情况</h2>
+<p class="task-title"><strong>任务一：原生通用问答会话搭建</strong></p>
+<p class="sub-title">1. 页面与交互</p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>聊天页补齐标题栏、返回入口，并适配输入栏与导航栏</td><td class="status">✅ 已完成</td></tr>
+<tr><td>新增历史会话侧边栏，支持滑入滑出、新建会话和删除记录</td><td class="status">✅ 已完成</td></tr>
+<tr><td>回答支持点赞/点踩/撤销，以及本地语音播报控制</td><td class="status">✅ 已完成</td></tr>
+<tr><td>补齐问答、图片、推荐问题等消息样式，并提供测试页便于接入</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="sub-title">2. 会话与接入</p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>按会话 ID 管理会话，打通发送、流式回答和历史分页</td><td class="status">✅ 已完成</td></tr>
+<tr><td>补齐历史消息、会话删除、业务配置及反馈接口</td><td class="status">✅ 已完成</td></tr>
+<tr><td>统一消息管理与错误码文案，收敛发送流程</td><td class="status">✅ 已完成</td></tr>
+<tr><td>对外拆出接入 API，并接入本地 TTS 适配层</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务二：H5 混合聊天 TTS 播报调整</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>本地 TTS 支持带业务 ID 的全文分块播报、会话管理和生命周期回调</td><td class="status">✅ 已完成</td></tr>
+<tr><td>H5 混合问答按业务 ID 分发开始/结束/打断状态，避免串单</td><td class="status">✅ 已完成</td></tr>
+<tr><td>挚护办同步本地 TTS 版本，修复 H5 播报交互问题</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<h2>三、下周工作计划</h2>
+<ol><li>通用问答接入挚护办等宿主，完成页面、历史侧栏和反馈交互联调。</li><li>覆盖流式回答、历史分页、本地播报和点赞点踩等场景回归。</li><li>H5 混合聊天结合长文播报与业务 ID 状态回传做提测。</li></ol>
+<div class="footer">由 DailyReport 周报生成 · 2026-W33</div>
+</article></body></html>

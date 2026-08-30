@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>nedhuo汇报周期: 2026年8月3日 — 2026年8月9日</title>
+<style>
+:root{--text:#1f2328;--muted:#57606a;--border:#d0d7de;--bg:#fff;--head-bg:#f6f8fa}
+*{box-sizing:border-box}body{margin:0;padding:32px 20px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--text);background:#f3f4f6;line-height:1.7}
+.page{max-width:860px;margin:0 auto;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:40px 44px}
+h1{margin:0 0 28px;font-size:1.55rem;border-bottom:1px solid var(--border);padding-bottom:16px}h2{margin:32px 0 14px;font-size:1.2rem}
+p{margin:0 0 12px}.task-title{margin:22px 0 10px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:0 0 8px;font-size:.95rem}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:var(--head-bg);font-weight:600}
+td.status{white-space:nowrap;width:8.5em}ol{margin:0;padding-left:1.4em}li{margin:6px 0}
+.footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+@media print{body{background:#fff;padding:0}.page{border:none;border-radius:0;padding:0}}
+</style></head><body><article class="page">
+<h1>nedhuo汇报周期: 2026年8月3日 — 2026年8月9日</h1>
+<h2>一、本周总结</h2>
+<p>本周共计进行三块工作：IM聊天埋点补齐与文档整理、客户端原生问答模块新建、混合问答语音输入与本地播报调整。</p>
+<p>周一整理聊天埋点表格文档，主要包含埋点页面，位置，定义，参数等事项。完成IM聊天模块、会话模块埋点，清理旧埋点逻辑。新建通用问答模块：搭建模块工程、完成问答页面和消息列表，支持内容边生成边展示，接上问答、图片、推荐问题等样式，整理设计说明和接入文档。H5聊天新增语音输入栏，接上本地播报和长文分段朗读，打通H5与原生播放状态同步，处理键盘遮挡、识别回调、上传失败卡住发送等问题，相关改动已同步到挚护办。</p>
+<p>下周重点做通用问答业务完善，以及H5聊天连调工作。</p>
+<h2>二、本周任务完成情况</h2>
+<p class="task-title"><strong>任务一：聊天埋点与文档整理</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>周一整理聊天埋点文档，明确页面、点击、消息等统计口径</td><td class="status">✅ 已完成</td></tr>
+<tr><td>会话列表、聊天页补齐浏览、发消息、切换客服状态统计</td><td class="status">✅ 已完成</td></tr>
+<tr><td>修正音视频通话、好友详情等入口的统计参数</td><td class="status">✅ 已完成</td></tr>
+<tr><td>统一消息 ID 字段名，清理旧统计代码和多余资源</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务二：通用问答模块新建</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>新建模块工程，补齐设计说明，方便后期技术同步</td><td class="status">✅ 已完成</td></tr>
+<tr><td>搭建问答页面和消息列表，支持内容边生成边刷新</td><td class="status">✅ 已完成</td></tr>
+<tr><td>接上问答、图片、推荐问题等常见消息样式</td><td class="status">✅ 已完成</td></tr>
+<tr><td>修复历史消息加载失败、结束时内容丢失，并统一资源命名</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务三：混合问答语音输入与播报</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>新增新版语音输入栏，修复键盘遮挡、识别回调和布局问题</td><td class="status">✅ 已完成</td></tr>
+<tr><td>接上本地语音播报，支持长文分段朗读、排队播放和停止</td><td class="status">✅ 已完成</td></tr>
+<tr><td>新增 Action，支持与 H5 查询/切换播报开关，并回传播放状态</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<h2>三、下周工作计划</h2>
+<ol><li>H5混合聊天功能联调，提测。</li><li>客户端原生聊天功能补全，UI补全，接入测试。</li></ol>
+<div class="footer">由 DailyReport 周报生成 · 2026-W32</div>
+</article></body></html>

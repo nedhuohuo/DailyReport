@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>nedhuo汇报周期: 2026年8月17日 — 2026年8月23日</title>
+<style>
+:root{--text:#1f2328;--muted:#57606a;--border:#d0d7de;--bg:#fff;--head-bg:#f6f8fa}
+*{box-sizing:border-box}body{margin:0;padding:32px 20px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--text);background:#f3f4f6;line-height:1.7}
+.page{max-width:860px;margin:0 auto;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:40px 44px}
+h1{margin:0 0 28px;font-size:1.55rem;border-bottom:1px solid var(--border);padding-bottom:16px}h2{margin:32px 0 14px;font-size:1.2rem}
+p{margin:0 0 12px}.task-title{margin:22px 0 10px;font-weight:600}
+.sub-title{margin:16px 0 8px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:0 0 8px;font-size:.95rem}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:var(--head-bg);font-weight:600}
+td.status{white-space:nowrap;width:8.5em}ol{margin:0;padding-left:1.4em}li{margin:6px 0}
+.footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+@media print{body{background:#fff;padding:0}.page{border:none;border-radius:0;padding:0}}
+</style></head><body><article class="page">
+<h1>nedhuo汇报周期: 2026年8月17日 — 2026年8月23日</h1>
+<h2>一、本周总结</h2>
+<p>本周共计进行三块工作：原生通用问答会话完善、微信语音输入体验调整、ASR 实时录音编码。</p>
+<p>在上周通用问答基础上，收敛会话状态和消息模型，流式回答保留气泡占位、结束后再渲染 Markdown，并修正点赞点踩落点与历史远程分页。语音输入切到微信风格输入栏，补齐结束识别时光标恢复、静默超时自动完成和停止录制。ASR 侧用 FFmpeg 管道做实时 PCM 转 MP3，修结束时重复生成完整录音。相关版本已同步到挚护办。</p>
+<p>下周继续通用问答宿主接入与场景回归，以及混合聊天语音输入和录音提测。</p>
+<h2>二、本周任务完成情况</h2>
+<p class="task-title"><strong>任务一：原生通用问答会话完善</strong></p>
+<p class="sub-title">1. 页面与反馈</p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>流式回答保留气泡占位，结束后再渲染 Markdown</td><td class="status">✅ 已完成</td></tr>
+<tr><td>点赞/点踩只挂到已完成的 AI 回答，避免错落到用户气泡</td><td class="status">✅ 已完成</td></tr>
+<tr><td>消息列表贴底滚动，阅读历史时不再被强拉回底部</td><td class="status">✅ 已完成</td></tr>
+<tr><td>历史侧栏展示与绑定调整</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="sub-title">2. 会话与历史</p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>按业务 ID 配置会话，统一一轮问答状态</td><td class="status">✅ 已完成</td></tr>
+<tr><td>历史消息改走远程分页接口</td><td class="status">✅ 已完成</td></tr>
+<tr><td>统一问答消息内容模型，收敛流式文本合并</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务二：微信语音输入体验调整</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>混合问答页切换为微信风格语音输入栏，并简化原生扬声器控制</td><td class="status">✅ 已完成</td></tr>
+<tr><td>识别文本可插入输入框，结束识别时恢复光标位置</td><td class="status">✅ 已完成</td></tr>
+<tr><td>支持静默超时自动完成，以及停止识别并保留已识别内容</td><td class="status">✅ 已完成</td></tr>
+<tr><td>挚护办同步聊天组件版本，修复录制中焦点变化和消息重复</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务三：ASR 实时录音编码</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>录音过程实时将 PCM 编码为 MP3</td><td class="status">✅ 已完成</td></tr>
+<tr><td>录音文件异步管理，支持快照复制与最终文件交付</td><td class="status">✅ 已完成</td></tr>
+<tr><td>修复会话结束时重复生成完整录音文件</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<h2>三、下周工作计划</h2>
+<ol><li>通用问答接入挚护办等宿主，联调页面、历史侧栏和反馈交互。</li><li>覆盖流式回答、历史分页、点赞点踩和本地播报等场景回归。</li><li>H5 混合聊天结合微信语音输入、录音文件交付做提测。</li></ol>
+<div class="footer">由 DailyReport 周报生成 · 2026-W34</div>
+</article></body></html>

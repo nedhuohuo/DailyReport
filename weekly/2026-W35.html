@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>nedhuo汇报周期: 2026年8月24日 — 2026年8月30日</title>
+<!-- WEEKLY_HTML_STYLE_LOCKED: copy this <style> block verbatim. Do not restyle. -->
+<style>
+:root{--text:#1f2328;--muted:#57606a;--border:#d0d7de;--bg:#fff;--head-bg:#f6f8fa}
+*{box-sizing:border-box}body{margin:0;padding:32px 20px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--text);background:#f3f4f6;line-height:1.7}
+.page{max-width:860px;margin:0 auto;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:40px 44px}
+h1{margin:0 0 28px;font-size:1.55rem;border-bottom:1px solid var(--border);padding-bottom:16px}h2{margin:32px 0 14px;font-size:1.2rem}
+p{margin:0 0 12px}.task-title{margin:22px 0 10px;font-weight:600}
+.sub-title{margin:16px 0 8px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:0 0 8px;font-size:.95rem}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:var(--head-bg);font-weight:600}
+td.status{white-space:nowrap;width:8.5em}ol{margin:0;padding-left:1.4em}li{margin:6px 0}
+.footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+@media print{body{background:#fff;padding:0}.page{border:none;border-radius:0;padding:0}}
+</style>
+</head>
+<body>
+<article class="page">
+<h1>nedhuo汇报周期: 2026年8月24日 — 2026年8月30日</h1>
+<h2>一、本周总结</h2>
+<p>本周重点推进两类工作：通用基础组件库建设与原生通用问答稳定性重构。</p>
+<p>基础组件侧完成通用标签栏、选择器及单双滑块的主体能力，补齐 XML 属性、样式资源、演示页面、边界校验与手势处理。通用问答侧统一会话和消息身份模型，重构流式回答、历史分页、推荐问题、反馈与 TTS 的状态链路，并修复新会话历史重复、键盘焦点及列表滚动问题。</p>
+<p>下周将围绕业务接入与场景回归，验证组件在真实页面中的适配效果，并继续收敛通用问答的会话切换、历史加载和交互稳定性。</p>
+<h2>二、本周任务完成情况</h2>
+<p class="task-title"><strong>任务一：通用标签栏组件建设</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>新增通用标签栏组件，支持基础、卡片及 TAG 等展示样式</td><td class="status">✅ 已完成</td></tr>
+<tr><td>补齐选中加粗、背景高度、内边距、指示器及布局宽度等配置能力</td><td class="status">✅ 已完成</td></tr>
+<tr><td>优化标签布局、背景绘制与资源初始化逻辑，移除无效资源</td><td class="status">✅ 已完成</td></tr>
+<tr><td>提供示例页面与属性说明，覆盖主要样式组合</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务二：通用选择器组件建设</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>实现通用滚轮选择器及弹框形态，支持 XML 配置和固定行高</td><td class="status">✅ 已完成</td></tr>
+<tr><td>重构数据提供、选择控制和状态渲染流程，统一选中数据处理</td><td class="status">✅ 已完成</td></tr>
+<tr><td>补齐空数据、异常数据和边界值校验，完善错误处理与日志</td><td class="status">✅ 已完成</td></tr>
+<tr><td>调整默认项高度、选中背景及确认区域样式，并增加边界示例</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务三：通用滑块组件建设</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>新增单值与区间滑块组件，统一公共绘制、测量和交互基座</td><td class="status">✅ 已完成</td></tr>
+<tr><td>支持值域、步长、轨道、滑块、两侧内容及数值气泡等属性配置</td><td class="status">✅ 已完成</td></tr>
+<tr><td>完善 RTL、键盘操作、无障碍信息和连续模式步进处理</td><td class="status">✅ 已完成</td></tr>
+<tr><td>修复纵向滑动意图识别，减少与外层滚动容器的手势冲突</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务四：原生通用问答会话与消息链路重构</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>统一业务 ID、会话版本及消息身份模型，收敛新会话与会话切换逻辑</td><td class="status">✅ 已完成</td></tr>
+<tr><td>重构流式消息桥接、文本合并和会话状态处理，移除旧网关兼容层</td><td class="status">✅ 已完成</td></tr>
+<tr><td>优化历史消息分页和列表快照投影，修复实时消息与历史消息重复</td><td class="status">✅ 已完成</td></tr>
+<tr><td>精简消息领域模型与旧列表内容层，统一消息唯一性判断</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<p class="task-title"><strong>任务五：原生通用问答交互与反馈体验优化</strong></p>
+<table><thead><tr><th>事项</th><th>状态</th></tr></thead><tbody>
+<tr><td>完善回答后推荐问题的加载、刷新、去重及上下文绑定</td><td class="status">✅ 已完成</td></tr>
+<tr><td>补齐点踩标签与反馈请求，并统一反馈和 TTS 的后端消息标识</td><td class="status">✅ 已完成</td></tr>
+<tr><td>打开历史侧栏前关闭键盘并清理焦点，键盘弹出时支持消息列表贴底</td><td class="status">✅ 已完成</td></tr>
+<tr><td>优化顶部历史加载与刷新状态，减少页面切换时的跳动和重复回填</td><td class="status">✅ 已完成</td></tr>
+</tbody></table>
+<h2>三、下周工作计划</h2>
+<ol>
+<li>推动标签栏、选择器和滑块组件接入实际业务页面，验证主题、尺寸、手势与异常数据适配。</li>
+<li>补充通用组件的典型组合与边界场景回归，继续完善文档和对外使用约束。</li>
+<li>对通用问答开展会话切换、历史分页、消息去重、流式回答和推荐问题的整链路回归。</li>
+<li>验证反馈、TTS、键盘与列表滚动交互在宿主页面中的表现，跟进联调问题修复。</li>
+</ol>
+<div class="footer">由 DailyReport 周报生成 · 2026-W35</div>
+</article>
+</body>
+</html>
